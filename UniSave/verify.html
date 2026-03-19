@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Get Verified — UniSave Botswana</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .verify-layout { display:grid; grid-template-columns:1fr 1fr; min-height:calc(100vh - var(--nav-h)); }
+
+    .verify-left {
+      padding:56px 52px; display:flex; flex-direction:column; justify-content:center;
+      background:linear-gradient(160deg,#f0fdf4,#dcfce7 60%,#f5f8f5 100%);
+      border-right:1px solid var(--border); position:relative; overflow:hidden;
+    }
+    .verify-left-blob { position:absolute; top:-60px; left:-60px; width:400px; height:400px; border-radius:50%; background:radial-gradient(circle,rgba(21,128,61,0.12) 0%,transparent 70%); pointer-events:none; }
+    .verify-left-content { position:relative; z-index:1; }
+    .verify-left h1 { font-size:clamp(1.8rem,3vw,2.5rem); margin-bottom:12px; line-height:1.2; }
+    .verify-left .hero-sub { color:var(--text-dim); font-size:0.92rem; margin-bottom:32px; line-height:1.7; }
+
+    .perk-list { display:flex; flex-direction:column; gap:11px; }
+    .perk-item { display:flex; align-items:flex-start; gap:12px; padding:13px 15px; background:#fff; border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow-sm); transition:border-color var(--transition); }
+    .perk-item:hover { border-color:var(--border-accent); }
+    .perk-icon { font-size:1.2rem; flex-shrink:0; margin-top:1px; }
+    .perk-text h4 { font-size:0.84rem; font-weight:700; color:var(--text); margin-bottom:2px; font-family:'Plus Jakarta Sans',sans-serif; }
+    .perk-text p  { font-size:0.76rem; color:var(--text-dim); }
+
+    .uni-logos { display:flex; flex-wrap:wrap; gap:8px; margin-top:24px; }
+    .uni-tag { padding:5px 12px; background:#fff; border:1px solid var(--border); border-radius:var(--radius-pill); font-size:0.72rem; font-weight:700; color:var(--text-dim); }
+
+    .verify-right { padding:56px 52px; display:flex; flex-direction:column; justify-content:center; background:var(--card); }
+
+    /* STEP INDICATORS */
+    .step-indicators { display:flex; align-items:center; gap:0; list-style:none; margin-bottom:32px; }
+    .step-indicators li { display:flex; align-items:center; gap:7px; font-size:0.76rem; font-weight:700; color:var(--text-muted); }
+    .s-num { width:26px; height:26px; border-radius:50%; background:var(--surface); border:1.5px solid var(--border); display:inline-flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; transition:all var(--transition); }
+    .step-indicators li.current .s-num { background:var(--green); border-color:var(--green); color:#fff; }
+    .step-indicators li.current { color:var(--text); }
+    .step-indicators li.done .s-num { background:var(--green-pale); border-color:var(--green-mid); color:var(--green); }
+    .step-indicators li.done { color:var(--green); }
+    .step-sep { flex:1; height:1.5px; background:var(--border); margin:0 8px; min-width:16px; }
+
+    .verify-step { display:none; }
+    .verify-step.active { display:block; }
+    .step-title    { font-family:'Fraunces',serif; font-weight:800; font-size:1.4rem; margin-bottom:4px; color:var(--text); }
+    .step-subtitle { color:var(--text-dim); font-size:0.875rem; margin-bottom:24px; }
+
+    .uni-grid { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-bottom:16px; }
+    .uni-opt {
+      padding:10px 13px; background:var(--bg); border:1.5px solid var(--border);
+      border-radius:var(--radius); cursor:pointer; transition:all var(--transition);
+      font-size:0.81rem; font-weight:600; text-align:left; color:var(--text-dim);
+      font-family:'Plus Jakarta Sans',sans-serif;
+    }
+    .uni-opt:hover, .uni-opt.selected { border-color:var(--green); background:var(--green-faint); color:var(--green); }
+
+    .or-divider { display:flex; align-items:center; gap:10px; color:var(--text-muted); font-size:0.76rem; margin:14px 0; }
+    .or-divider::before, .or-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+
+    .upload-zone { border:2px dashed var(--border-accent); border-radius:var(--radius); padding:26px; text-align:center; cursor:pointer; margin-bottom:14px; transition:all var(--transition); }
+    .upload-zone:hover { background:var(--green-faint); border-color:var(--green-mid); }
+
+    .success-state { text-align:center; padding:16px 0; }
+    .success-emoji { font-size:4rem; display:block; margin-bottom:16px; animation:float 3s ease-in-out infinite; }
+    .success-state h2 { font-size:1.8rem; margin-bottom:10px; }
+    .success-state p  { color:var(--text-dim); margin-bottom:24px; }
+
+    @media (max-width:900px) {
+      .verify-layout { grid-template-columns:1fr; }
+      .verify-left { display:none; }
+      .verify-right { padding:36px 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="index.html"><div class="nav-logo-icon">U</div><span class="nav-logo-text">UniSave</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="deals.html">Deals</a></li>
+    <li><a href="categories.html">Categories</a></li>
+    <li><a href="businesses.html">For Businesses</a></li>
+    <li><a href="verify.html" class="active">Join Free</a></li>
+  </ul>
+  <div class="nav-actions"><a href="login.html" class="btn btn-ghost btn-sm">Log in</a></div>
+  <button class="nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</nav>
+
+<div class="verify-layout">
+  <!-- LEFT -->
+  <div class="verify-left">
+    <div class="verify-left-blob"></div>
+    <div class="verify-left-content anim-fadeup">
+      <div class="section-label" style="margin-bottom:14px;">100% Free 🎓</div>
+      <h1>Unlock <span class="gradient-text">120+ deals</span> in Gaborone</h1>
+      <p class="hero-sub">One quick verification, then instant access to student discounts on food, transport, airtime and more — completely free, no credit card needed.</p>
+      <div class="perk-list">
+        <div class="perk-item"><div class="perk-icon">⚡</div><div class="perk-text"><h4>Verify in 60 seconds</h4><p>Use your university email or student ID from any Gaborone institution.</p></div></div>
+        <div class="perk-item"><div class="perk-icon">🔒</div><div class="perk-text"><h4>Always free for students</h4><p>No subscription, no hidden fees. Free for your entire time at university.</p></div></div>
+        <div class="perk-item"><div class="perk-icon">📍</div><div class="perk-text"><h4>Local Gaborone deals</h4><p>Deals at real local businesses you actually use — not online-only stores.</p></div></div>
+        <div class="perk-item"><div class="perk-icon">🔔</div><div class="perk-text"><h4>Weekly new deals</h4><p>Get notified when new deals drop from your favourite local businesses.</p></div></div>
+      </div>
+      <p style="font-size:0.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin:24px 0 10px;">Accepted universities</p>
+      <div class="uni-logos">
+        <span class="uni-tag">🏛️ UB</span><span class="uni-tag">🔬 BIUST</span><span class="uni-tag">🎓 Limkokwing</span>
+        <span class="uni-tag">📚 BAISAGO</span><span class="uni-tag">🏫 Botho Uni</span><span class="uni-tag">+ more</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="verify-right">
+    <ul class="step-indicators">
+      <li class="current" id="si-1"><span class="s-num">1</span> Your details</li>
+      <span class="step-sep"></span>
+      <li id="si-2"><span class="s-num">2</span> University</li>
+      <span class="step-sep"></span>
+      <li id="si-3"><span class="s-num">3</span> Verify</li>
+    </ul>
+
+    <!-- STEP 1 -->
+    <div class="verify-step active" data-step="1">
+      <div class="step-title">Create your account</div>
+      <div class="step-subtitle">Sign up free — takes under a minute.</div>
+      <div class="form-group"><label class="form-label">Full name</label><input type="text" class="form-input" placeholder="Keitumetse Dithato"/></div>
+      <div class="form-group"><label class="form-label">Phone number</label><input type="tel" class="form-input" placeholder="+267 7X XXX XXX"/></div>
+      <div class="form-group"><label class="form-label">Email address</label><input type="email" class="form-input" placeholder="your@email.com"/></div>
+      <div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" placeholder="At least 8 characters"/></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;" data-step-next="2">Continue →</button>
+      <p style="text-align:center;margin-top:14px;font-size:0.8rem;color:var(--text-dim);">Already verified? <a href="login.html" style="color:var(--green);text-decoration:none;font-weight:700;">Log in</a></p>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="verify-step" data-step="2">
+      <div class="step-title">Where do you study?</div>
+      <div class="step-subtitle">Select your institution in Gaborone.</div>
+      <div class="form-group"><label class="form-label">Search your university</label><input type="text" class="form-input" placeholder="Type university name…"/></div>
+      <div class="uni-grid">
+        <button class="uni-opt" onclick="selectUni(this)">🏛️ University of Botswana</button>
+        <button class="uni-opt" onclick="selectUni(this)">🔬 BIUST</button>
+        <button class="uni-opt" onclick="selectUni(this)">🎓 Limkokwing</button>
+        <button class="uni-opt" onclick="selectUni(this)">📚 BAISAGO</button>
+        <button class="uni-opt" onclick="selectUni(this)">🏫 Botho University</button>
+        <button class="uni-opt" onclick="selectUni(this)">🌍 Other institution</button>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-ghost" style="flex:1;justify-content:center;" onclick="goStep(1)">← Back</button>
+        <button class="btn btn-primary" style="flex:2;justify-content:center;padding:12px;" data-step-next="3">Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="verify-step" data-step="3">
+      <div class="step-title">Verify your status</div>
+      <div class="step-subtitle">Prove you're a student to unlock all deals.</div>
+      <div class="form-group"><label class="form-label">University email address</label><input type="email" class="form-input" placeholder="yourname@ub.ac.bw"/></div>
+      <div class="or-divider">or upload your student ID</div>
+      <div class="upload-zone" onclick="this.querySelector('input').click()">
+        <div style="font-size:2rem;margin-bottom:8px;">📄</div>
+        <p style="font-size:0.8rem;color:var(--text-dim);">Drag &amp; drop your student card<br><span style="color:var(--green);font-weight:700;">or click to browse</span></p>
+        <input type="file" style="display:none" accept="image/*,.pdf"/>
+      </div>
+      <p style="font-size:0.73rem;color:var(--text-muted);margin-bottom:14px;">🔒 Your information is encrypted and kept private.</p>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-ghost" style="flex:1;justify-content:center;" onclick="goStep(2)">← Back</button>
+        <button class="btn btn-primary" style="flex:2;justify-content:center;padding:12px;" onclick="completeVerify()">Verify &amp; Get Access 🎉</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: SUCCESS -->
+    <div class="verify-step" data-step="4">
+      <div class="success-state">
+        <span class="success-emoji">🎉</span>
+        <h2>You're <span class="gradient-text">verified!</span></h2>
+        <p>Welcome to UniSave! You now have access to 120+ student deals across Gaborone. Start saving today.</p>
+        <a href="deals.html" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">Browse deals now →</a>
+        <p style="margin-top:12px;font-size:0.78rem;color:var(--text-muted);">Check your email for a confirmation link. Welcome to UniSave 🇧🇼</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+  function goStep(n) {
+    document.querySelectorAll('.verify-step').forEach(function(s) { s.classList.remove('active'); });
+    document.querySelector('.verify-step[data-step="' + n + '"]').classList.add('active');
+    updateIndicators(n);
+  }
+  function updateIndicators(current) {
+    [1,2,3].forEach(function(n) {
+      var li = document.getElementById('si-' + n);
+      li.classList.remove('current','done');
+      if (n < current) li.classList.add('done');
+      if (n === current) li.classList.add('current');
+    });
+  }
+  document.querySelectorAll('[data-step-next]').forEach(function(btn) {
+    btn.addEventListener('click', function() { goStep(parseInt(this.getAttribute('data-step-next'))); });
+  });
+  function selectUni(el) {
+    document.querySelectorAll('.uni-opt').forEach(function(u) { u.classList.remove('selected'); });
+    el.classList.add('selected');
+  }
+  function completeVerify() {
+    document.querySelectorAll('.verify-step').forEach(function(s) { s.classList.remove('active'); });
+    document.querySelector('.verify-step[data-step="4"]').classList.add('active');
+    document.querySelectorAll('.step-indicators li').forEach(function(li) { li.classList.remove('current'); li.classList.add('done'); });
+  }
+</script>
+</body>
+</html>
