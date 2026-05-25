@@ -567,7 +567,7 @@
   }
 
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-     INIT
+     INIT 
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   document.addEventListener('DOMContentLoaded', function () {
     initMobileNav();
