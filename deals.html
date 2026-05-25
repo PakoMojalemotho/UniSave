@@ -6,7 +6,7 @@
   <title>All Deals — UniSave Botswana</title>
   <link rel="stylesheet" href="css/style.css"/>
   <style>
-    .deals-hero { padding:56px 48px 40px; background:linear-gradient(160deg,#f0fdf4,#dcfce7 60%,#f5f8f5 100%); border-bottom:1px solid var(--border); position:relative; overflow:hidden; }
+    .deals-hero { padding:56px 48px 40px; background:linear-gradient(160deg,#0a1628,#0f1e3a 60%,#162040 100%); border-bottom:1px solid var(--border); position:relative; overflow:hidden; }
     .deals-hero h1 { font-size:clamp(2rem,4.5vw,3.2rem); margin-bottom:8px; }
     .deals-hero p { color:var(--text-dim); max-width:440px; }
 
@@ -18,7 +18,7 @@
       font-family:'Plus Jakarta Sans',sans-serif; font-size:0.84rem; font-weight:600;
       outline:none; cursor:pointer; transition:border-color var(--transition);
     }
-    .filter-select:focus { border-color:var(--green); }
+    .filter-select:focus { border-color:var(--amber); }
 
     .cat-scroll { display:flex; gap:9px; overflow-x:auto; padding:14px 48px; scrollbar-width:none; background:var(--card); border-bottom:1px solid var(--border); }
     .cat-scroll::-webkit-scrollbar { display:none; }
@@ -32,10 +32,23 @@
     .empty-state h3 { font-size:1.1rem; margin-bottom:7px; }
     .empty-state p  { color:var(--text-dim); font-size:0.875rem; }
 
-    @media (max-width:900px) {
-      .deals-hero, .deals-toolbar, .cat-scroll, .deals-body { padding-left:20px; padding-right:20px; }
+    
     }
-  </style>
+  
+    /* ── RESPONSIVE PATCH (deals) ── */
+    @media (max-width:960px){
+      .deals-hero{padding:44px 1.5rem 32px;}
+      .deals-toolbar,.cat-scroll,.deals-body{padding-left:1.5rem;padding-right:1.5rem;}
+    }
+    @media (max-width:600px){
+      .deals-toolbar{flex-wrap:wrap;}
+      .deals-toolbar .search-bar{flex:1 1 100%;max-width:100%;}
+      .filter-select{flex:1;}
+      .deals-grid{grid-template-columns:1fr;}
+      .cat-scroll{gap:7px;padding-left:1rem;padding-right:1rem;}
+      .deals-hero,.deals-toolbar,.deals-body{padding-left:1rem;padding-right:1rem;}
+    }
+</style>
 </head>
 <body>
 

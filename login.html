@@ -6,7 +6,7 @@
   <title>Log In — UniSave Botswana</title>
   <link rel="stylesheet" href="css/style.css"/>
   <style>
-    .auth-layout { display:grid; grid-template-columns:1fr 1fr; min-height:calc(100vh - var(--nav-h)); }
+    .auth-layout { display:grid; grid-template-columns:1fr 1fr; min-height:calc(100svh - var(--nav-h)); }
 
     .auth-left {
       background:linear-gradient(160deg,#14532d 0%,#166534 60%,#15803d 100%);
@@ -15,7 +15,7 @@
     }
     .auth-left::before { content:''; position:absolute; top:-80px; left:-60px; width:400px; height:400px; border-radius:50%; background:rgba(255,255,255,0.05); pointer-events:none; }
     .auth-left-content { position:relative; z-index:1; text-align:center; }
-    .auth-left-logo { font-family:'Fraunces',serif; font-weight:800; font-size:2rem; color:#86efac; display:block; margin-bottom:10px; }
+    .auth-left-logo { font-family:'Fraunces',serif; font-weight:800; font-size:2rem; color:var(--amber-light); display:block; margin-bottom:10px; }
     .auth-left h2 { font-size:1.4rem; color:#fff; margin-bottom:10px; }
     .auth-left p  { color:rgba(255,255,255,0.7); font-size:0.875rem; line-height:1.7; max-width:280px; margin:0 auto 32px; }
 
@@ -31,7 +31,7 @@
     .pc-icon { font-size:1.5rem; flex-shrink:0; }
     .pc-brand { font-family:'Fraunces',serif; font-weight:800; font-size:0.875rem; color:#fff; }
     .pc-sub   { font-size:0.72rem; color:rgba(255,255,255,0.65); margin-top:1px; }
-    .pc-disc  { margin-left:auto; font-weight:800; font-size:0.9rem; color:#86efac; white-space:nowrap; }
+    .pc-disc  { margin-left:auto; font-weight:800; font-size:0.9rem; color:var(--amber-light); white-space:nowrap; }
 
     .auth-right { display:flex; align-items:center; justify-content:center; padding:60px 48px; background:var(--card); }
     .auth-form  { width:100%; max-width:380px; }
@@ -47,23 +47,33 @@
       cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px;
       transition:all var(--transition);
     }
-    .social-btn:hover { border-color:var(--green); background:var(--green-faint); }
+    .social-btn:hover { border-color:var(--amber); background:var(--amber-faint); }
     .social-btn svg { width:18px; height:18px; flex-shrink:0; }
 
     .or-div { display:flex; align-items:center; gap:10px; color:var(--text-muted); font-size:0.76rem; margin:16px 0; }
     .or-div::before,.or-div::after { content:''; flex:1; height:1px; background:var(--border); }
 
-    .forgot-link { float:right; font-size:0.76rem; color:var(--green); text-decoration:none; }
+    .forgot-link { float:right; font-size:0.76rem; color:var(--amber); text-decoration:none; }
     .forgot-link:hover { text-decoration:underline; }
     .form-footer { text-align:center; margin-top:16px; font-size:0.8rem; color:var(--text-dim); }
-    .form-footer a { color:var(--green); text-decoration:none; font-weight:700; }
+    .form-footer a { color:var(--amber); text-decoration:none; font-weight:700; }
 
-    @media (max-width:900px) {
-      .auth-layout { grid-template-columns:1fr; }
+    
       .auth-left { display:none; }
       .auth-right { padding:40px 22px; }
     }
-  </style>
+  
+    /* ── RESPONSIVE PATCH (login) ── */
+    @media (max-width:960px){
+      .auth-layout{grid-template-columns:1fr;}
+      .auth-left{display:none;}
+      .auth-right{padding:2rem 1.5rem;min-height:calc(100svh - var(--nav-h));}
+    }
+    @media (max-width:600px){
+      .auth-right{padding:1.5rem 1rem;}
+      .auth-form h1{font-size:1.6rem;}
+    }
+</style>
 </head>
 <body>
 
@@ -132,17 +142,68 @@
 
 <script src="js/main.js"></script>
 <script>
+  // If already logged in, go to dashboard
+  if (localStorage.getItem('unisave_user')) {
+    window.location.href = 'dashboard.html';
+  }
+
   function handleLogin() {
     var id   = document.getElementById('login-id').value.trim();
     var pass = document.getElementById('login-pass').value;
     if (!id || !pass) { showToast('Please fill in all fields.', 'error'); return; }
-    showToast('Logging you in… 🎉', 'success');
-    setTimeout(function() { window.location.href = 'deals.html'; }, 1800);
+
+    // Check for existing stored user matching this email
+    var storedUser = JSON.parse(localStorage.getItem('unisave_registered_' + id) || 'null');
+
+    var user;
+    if (storedUser && storedUser.password === pass) {
+      user = storedUser;
+    } else if (!storedUser) {
+      // Demo: create a user on first login with any credentials
+      user = {
+        name: id.includes('@') ? id.split('@')[0].replace(/[._]/g,' ').replace(/\b\w/g,c=>c.toUpperCase()) : 'Student User',
+        email: id.includes('@') ? id : id + '@student.ac.bw',
+        phone: id.includes('@') ? '' : id,
+        university: 'University of Botswana',
+        verified: true,
+        joinDate: Date.now(),
+        password: pass
+      };
+      localStorage.setItem('unisave_registered_' + id, JSON.stringify(user));
+    } else {
+      showToast('Incorrect password. Try again.', 'error');
+      return;
+    }
+
+    delete user.password;
+    localStorage.setItem('unisave_user', JSON.stringify(user));
+    showToast('Welcome back, ' + (user.name.split(' ')[0] || 'Student') + '! 🎉', 'success');
+
+    var params = new URLSearchParams(location.search);
+    var next = params.get('next') || 'dashboard.html';
+    setTimeout(function() { window.location.href = next; }, 1400);
   }
+
   function handleSocial(provider) {
-    showToast('Connecting to ' + provider + '…', 'info');
-    setTimeout(function() { window.location.href = 'deals.html'; }, 1800);
+    var user = {
+      name: 'Demo Student',
+      email: 'demo@ub.ac.bw',
+      phone: '+267 71 234 567',
+      university: 'University of Botswana',
+      verified: true,
+      joinDate: Date.now()
+    };
+    localStorage.setItem('unisave_user', JSON.stringify(user));
+    showToast('Connecting via ' + provider + '… 🎉', 'info');
+    setTimeout(function() { window.location.href = 'dashboard.html'; }, 1600);
   }
+
+  // Allow Enter key
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('login-pass').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') handleLogin();
+    });
+  });
 </script>
 </body>
 </html>

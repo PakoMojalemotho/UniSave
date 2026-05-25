@@ -19,7 +19,7 @@
 
     .biz-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; padding:56px 48px; }
     .biz-stat { background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:28px 24px; text-align:center; box-shadow:var(--shadow-sm); }
-    .biz-stat .num { font-family:'Fraunces',serif; font-weight:900; font-size:2.4rem; color:var(--green); line-height:1; margin-bottom:6px; }
+    .biz-stat .num { font-family:'Fraunces',serif; font-weight:900; font-size:2.4rem; color:var(--amber); line-height:1; margin-bottom:6px; }
     .biz-stat .lbl { font-size:0.83rem; color:var(--text-dim); }
 
     .why-section { padding:80px 48px; background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
@@ -37,14 +37,14 @@
       padding:32px 26px; box-shadow:var(--shadow-sm);
       display:flex; flex-direction:column;
     }
-    .price-card.featured { border-color:var(--green); box-shadow:0 8px 32px rgba(21,128,61,0.15); }
-    .price-badge { display:inline-block; padding:4px 12px; background:var(--green); color:#fff; border-radius:var(--radius-pill); font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:14px; }
+    .price-card.featured { border-color:var(--amber); box-shadow:0 8px 32px rgba(245,166,35,0.15); }
+    .price-badge { display:inline-block; padding:4px 12px; background:var(--amber); color:#fff; border-radius:var(--radius-pill); font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:14px; }
     .price-name { font-family:'Fraunces',serif; font-weight:800; font-size:1.2rem; margin-bottom:6px; }
-    .price-amount { font-family:'Fraunces',serif; font-weight:900; font-size:2.4rem; color:var(--green); line-height:1; margin-bottom:4px; }
+    .price-amount { font-family:'Fraunces',serif; font-weight:900; font-size:2.4rem; color:var(--amber); line-height:1; margin-bottom:4px; }
     .price-period { font-size:0.78rem; color:var(--text-muted); margin-bottom:20px; }
     .price-features { list-style:none; display:flex; flex-direction:column; gap:9px; margin-bottom:24px; flex:1; }
     .price-features li { font-size:0.83rem; color:var(--text-dim); display:flex; align-items:flex-start; gap:8px; }
-    .price-features li::before { content:'✓'; color:var(--green); font-weight:700; flex-shrink:0; }
+    .price-features li::before { content:'✓'; color:var(--amber); font-weight:700; flex-shrink:0; }
 
     .register-section { padding:80px 48px; background:var(--surface); border-top:1px solid var(--border); }
     .register-inner { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:start; }
@@ -83,7 +83,7 @@
 <!-- HERO -->
 <section class="biz-hero">
   <div class="section-label anim-fadeup">🏪 For local businesses</div>
-  <h1 class="anim-fadeup anim-delay-1">Reach <span style="color:#86efac;">hundreds</span> of<br>Gaborone students.</h1>
+  <h1 class="anim-fadeup anim-delay-1">Reach <span style="color:var(--amber-light);">hundreds</span> of<br>Gaborone students.</h1>
   <p class="anim-fadeup anim-delay-2">List your business on UniSave and get direct access to verified tertiary students actively looking for deals in Gaborone. Grow your customer base, increase sales and boost visibility — all from one platform.</p>
   <div class="biz-hero-actions anim-fadeup anim-delay-3">
     <a href="#register" class="btn btn-white btn-lg">List my business →</a>
