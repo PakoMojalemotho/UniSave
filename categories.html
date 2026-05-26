@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Categories — UniSave Botswana</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .cats-hero { padding:56px 48px 44px; background:linear-gradient(160deg,#0a1628,#0f1e3a 60%,#162040 100%); border-bottom:1px solid var(--border); }
+    .cats-hero h1 { font-size:clamp(2rem,4.5vw,3.2rem); margin-bottom:8px; }
+    .cats-hero p   { color:var(--text-dim); max-width:420px; }
+
+    .cat-big-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; padding:48px 48px 0; }
+    .cat-big-card {
+      border-radius:var(--radius-lg); padding:28px 22px;
+      display:flex; flex-direction:column; gap:12px;
+      border:1.5px solid var(--border); background:var(--card);
+      text-decoration:none;
+      transition:all var(--transition);
+      box-shadow:var(--shadow-sm);
+    }
+    .cat-big-card:hover { transform:translateY(-4px); border-color:var(--border-accent); box-shadow:0 12px 32px rgba(245,166,35,0.08); }
+    .cat-big-card .emoji { font-size:2.4rem; }
+    .cat-big-card h3 { font-family:'Fraunces',serif; font-weight:800; font-size:1rem; color:var(--text); }
+    .cat-big-card p  { font-size:0.79rem; color:var(--text-dim); line-height:1.45; }
+    .cat-big-card .count { font-size:0.7rem; font-weight:700; color:var(--amber); text-transform:uppercase; letter-spacing:0.08em; margin-top:auto; }
+
+    .cat-section { padding:52px 48px; border-top:1px solid var(--border); }
+    .cat-section-header { display:flex; align-items:center; gap:14px; margin-bottom:26px; }
+    .cat-section-icon { width:50px; height:50px; border-radius:var(--radius); background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.5rem; flex-shrink:0; }
+    .cat-section-header h2 { font-size:1.5rem; }
+    .cat-section-header p  { color:var(--text-dim); font-size:0.83rem; margin-top:3px; }
+    .view-all { margin-top:20px; }
+
+    @media (max-width:1100px) { .cat-big-grid { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:900px)  { .cats-hero,.cat-big-grid,.cat-section { padding-left:20px; padding-right:20px; } }
+    @media (max-width:480px)  { .cat-big-grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="index.html"><div class="nav-logo-icon">U</div><span class="nav-logo-text">UniSave</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="deals.html">Deals</a></li>
+    <li><a href="categories.html" class="active">Categories</a></li>
+    <li><a href="businesses.html">For Businesses</a></li>
+    <li><a href="verify.html">Join Free</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn btn-ghost btn-sm">Log in</a>
+    <a href="verify.html" class="btn btn-primary btn-sm">Get Verified</a>
+  </div>
+  <button class="nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</nav>
+
+<div class="cats-hero">
+  <div class="section-label anim-fadeup">🗂️ Browse</div>
+  <h1 class="anim-fadeup anim-delay-1">Shop by <span class="gradient-text">category</span></h1>
+  <p class="anim-fadeup anim-delay-2">Find the right deal for what you need — from food to transport to airtime.</p>
+</div>
+
+<div class="cat-big-grid" data-reveal>
+  <a href="deals.html?cat=food" class="cat-big-card"><div class="emoji">🍔</div><div><h3>Food &amp; Drink</h3><p>Restaurants, fast food, cafes and grocery discounts across Gaborone.</p></div><div class="count">35+ deals</div></a>
+  <a href="deals.html?cat=transport" class="cat-big-card"><div class="emoji">🚌</div><div><h3>Transport</h3><p>Combi rides, app-based transport and fuel discounts for students.</p></div><div class="count">12+ deals</div></a>
+  <a href="deals.html?cat=retail" class="cat-big-card"><div class="emoji">🛍️</div><div><h3>Retail &amp; Shopping</h3><p>Clothing, textbooks, electronics and everyday essentials.</p></div><div class="count">22+ deals</div></a>
+  <a href="deals.html?cat=airtime" class="cat-big-card"><div class="emoji">📱</div><div><h3>Airtime &amp; Data</h3><p>Mascom, Orange and BTCL data bundle deals for staying connected.</p></div><div class="count">8+ deals</div></a>
+  <a href="deals.html?cat=printing" class="cat-big-card"><div class="emoji">🖨️</div><div><h3>Printing &amp; Stationery</h3><p>Print assignments, binding and stationery near campus.</p></div><div class="count">10+ deals</div></a>
+  <a href="deals.html?cat=health" class="cat-big-card"><div class="emoji">💊</div><div><h3>Health &amp; Wellness</h3><p>Pharmacy discounts and health services for students.</p></div><div class="count">6+ deals</div></a>
+  <a href="deals.html?cat=fitness" class="cat-big-card"><div class="emoji">🏋️</div><div><h3>Fitness</h3><p>Gym memberships and sports facilities at student rates.</p></div><div class="count">7+ deals</div></a>
+  <a href="deals.html?cat=beauty" class="cat-big-card"><div class="emoji">✂️</div><div><h3>Hair &amp; Beauty</h3><p>Haircuts, salons and beauty services for less.</p></div><div class="count">10+ deals</div></a>
+</div>
+
+<!-- FOOD SECTION -->
+<section class="cat-section" id="food" data-reveal>
+  <div class="cat-section-header">
+    <div class="cat-section-icon">🍔</div>
+    <div><h2>Food &amp; Drink</h2><p>35+ student deals on meals, drinks and groceries in Gaborone</p></div>
+  </div>
+  <div class="deals-grid">
+    <div class="deal-card"><div class="deal-card-banner" style="background:linear-gradient(135deg,#fef3c7,#fde68a);">🍔</div><span class="badge badge-hot">Hot</span><div class="deal-card-body"><div class="deal-card-top"><span class="deal-brand">Chicken Licken</span><span class="deal-discount">15% OFF</span></div><div class="deal-location">📍 CBD &amp; Game City</div><p class="deal-desc">15% off all meals Mon–Fri with your UniSave student card.</p><a href="deals.html" class="deal-cta">Get deal →</a></div></div>
+    <div class="deal-card"><div class="deal-card-banner" style="background:linear-gradient(135deg,#fff7ed,#fed7aa);">🍕</div><span class="badge badge-new">New</span><div class="deal-card-body"><div class="deal-card-top"><span class="deal-brand">Steers</span><span class="deal-discount">Buy 1 Get 1</span></div><div class="deal-location">📍 Riverwalk &amp; Fairground</div><p class="deal-desc">Buy any burger, get a second free on Tuesdays.</p><a href="deals.html" class="deal-cta">Get deal →</a></div></div>
+    <div class="deal-card"><div class="deal-card-banner" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);">☕</div><div class="deal-card-body"><div class="deal-card-top"><span class="deal-brand">Mugg &amp; Bean</span><span class="deal-discount">Free refill</span></div><div class="deal-location">📍 Riverwalk Mall</div><p class="deal-desc">Free coffee or tea refill with any meal purchase.</p><a href="deals.html" class="deal-cta">Get deal →</a></div></div>
+    <div class="deal-card"><div class="deal-card-banner" style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);">🥗</div><div class="deal-card-body"><div class="deal-card-top"><span class="deal-brand">Nandos</span><span class="deal-discount">10% OFF</span></div><div class="deal-location">📍 Game City &amp; CBD</div><p class="deal-desc">10% student discount every day at Nandos Gaborone.</p><a href="deals.html" class="deal-cta">Get deal →</a></div></div>
+  </div>
+  <div class="view-all"><a href="deals.html?cat=food" class="btn btn-outline">View all food deals →</a></div>
+</section>
+
+<!-- TRANSPORT SECTION -->
+<section class="cat-section" id="transport" data-reveal>
+  <div class="cat-section-header">
+    <div class="cat-section-icon">🚌</div>
+    <div><h2>Transport</h2><p>12+ deals on combis, ride-hailing and travel in Gaborone</p></div>
+  </div>
+  <div class="deals-grid">
+    <div class="deal-card"><div class="deal-card-banner" style="background:linear-gradient(135deg,#e0f2fe,#bae6fd);">🚌</div><span class="badge badge-hot">Hot</span><div class="deal-card-body"><div class="deal-card-top"><span class="deal-brand">Seabelo Transport</span><span class="deal-discount">P2 OFF</span></div><div class="deal-location">📍 All Gaborone routes</div><p class="deal-desc">P2 off every combi ride. Show your UniSave card to the driver.</p><a href="deals.html" class="deal-cta">Get deal →</a></div></div>
+    <div class="deal-card"><div class="deal-card-banner" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);">🚕</div><div class="deal-card-body"><div class="deal-card-top"><span class="deal-brand">InDrive</span><span class="deal-discount">20% OFF</span></div><div class="deal-location">📍 Gaborone &amp; Francistown</div><p class="deal-desc">20% off your first 5 InDrive rides with student promo code.</p><a href="deals.html" class="deal-cta">Get deal →</a></div></div>
+  </div>
+  <div class="view-all"><a href="deals.html?cat=transport" class="btn btn-outline">View all transport deals →</a></div>
+</section>
+
+<!-- AIRTIME SECTION -->
+<section class="cat-section" id="airtime" data-reveal>
+  <div class="cat-section-header">
+    <div class="cat-section-icon">📱</div>
+    <div><h2>Airtime &amp; Data</h2><p>8+ deals on mobile data and airtime in Botswana</p></div>
+  </div>
+  <div class="deals-grid">
+    <div class="deal-card"><div class="deal-card-banner" style="background:linear-gradient(135deg,#e0f2fe,#bae6fd);">📱</div><span class="badge badge-exc">Exclusive</span><div class="deal-card-body"><div class="deal-card-top"><span class="deal-brand">Mascom</span><span class="deal-discount">20% Bonus</span></div><div class="deal-location">📍 All Mascom outlets</div><p class="deal-desc">Load any airtime amount and get 20% bonus data free.</p><a href="deals.html" class="deal-cta">Get deal →</a></div></div>
+    <div class="deal-card"><div class="deal-card-banner" style="background:linear-gradient(135deg,#fef3c7,#fde68a);">📶</div><div class="deal-card-body"><div class="deal-card-top"><span class="deal-brand">Orange Botswana</span><span class="deal-discount">Double Data</span></div><div class="deal-location">📍 All Orange shops</div><p class="deal-desc">Buy any data bundle and get double the data for verified students.</p><a href="deals.html" class="deal-cta">Get deal →</a></div></div>
+  </div>
+  <div class="view-all"><a href="deals.html?cat=airtime" class="btn btn-outline">View all airtime deals →</a></div>
+</section>
+
+<!-- PRINTING SECTION -->
+<section class="cat-section" id="printing" data-reveal>
+  <div class="cat-section-header">
+    <div class="cat-section-icon">🖨️</div>
+    <div><h2>Printing &amp; Stationery</h2><p>10+ deals on printing, binding and stationery near campus</p></div>
+  </div>
+  <div class="deals-grid">
+    <div class="deal-card"><div class="deal-card-banner" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe);">🖨️</div><span class="badge badge-free">Free</span><div class="deal-card-body"><div class="deal-card-top"><span class="deal-brand">PrintSmart</span><span class="deal-discount">10 Pages Free</span></div><div class="deal-location">📍 UB Campus &amp; CBD</div><p class="deal-desc">10 free B&amp;W pages per day. Colour at 50% off. Perfect for assignments.</p><a href="deals.html" class="deal-cta">Get deal →</a></div></div>
+    <div class="deal-card"><div class="deal-card-banner" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);">📋</div><div class="deal-card-body"><div class="deal-card-top"><span class="deal-brand">CopyKing</span><span class="deal-discount">30% OFF</span></div><div class="deal-location">📍 UB &amp; BIUST areas</div><p class="deal-desc">30% off all printing, binding and laminating services for students.</p><a href="deals.html" class="deal-cta">Get deal →</a></div></div>
+  </div>
+  <div class="view-all"><a href="deals.html?cat=printing" class="btn btn-outline">View all printing deals →</a></div>
+</section>
+
+<footer class="footer">
+  <div class="footer-top">
+    <div><span class="footer-logo">UniSave 🇧🇼</span><p class="footer-desc">Connecting Gaborone students with local businesses offering verified discounts.</p></div>
+    <div class="footer-col"><div class="footer-col-title">Discover</div><ul><li><a href="deals.html">All Deals</a></li><li><a href="categories.html">Categories</a></li></ul></div>
+    <div class="footer-col"><div class="footer-col-title">Account</div><ul><li><a href="verify.html">Get Verified</a></li><li><a href="login.html">Log In</a></li></ul></div>
+    <div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="#">About</a></li><li><a href="businesses.html">For Businesses</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><span>© 2025 UniSave Botswana.</span><div class="footer-bottom-links"><a href="#">Privacy</a><a href="#">Terms</a></div></div>
+</footer>
+<script src="js/main.js"></script>
+</body>
+</html>

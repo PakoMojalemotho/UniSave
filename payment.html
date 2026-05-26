@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payment — UniSave Botswana</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    /* ─── LAYOUT ─── */
+    .pay-layout {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 0;
+      min-height: calc(100svh - var(--nav-h));
+      background: var(--bg);
+    }
+
+    /* ─── LEFT PANEL ─── */
+    .pay-left {
+      padding: 52px 56px 80px;
+      border-right: 1px solid var(--border);
+    }
+    .pay-left-title {
+      font-family: 'Fraunces', serif;
+      font-weight: 900;
+      font-size: 1.8rem;
+      margin-bottom: 4px;
+    }
+    .pay-left-sub { color: var(--text-dim); font-size: 0.875rem; margin-bottom: 36px; }
+
+    /* ─── PLAN SWITCHER ─── */
+    .plan-switcher { display: flex; flex-direction: column; gap: 12px; margin-bottom: 36px; }
+    .plan-opt {
+      display: flex; align-items: center; gap: 16px;
+      padding: 18px 20px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      background: var(--card);
+      transition: all var(--transition);
+      position: relative;
+    }
+    .plan-opt:hover { border-color: var(--border-accent); }
+    .plan-opt.selected { border-color: var(--amber); background: var(--amber-faint); }
+    .plan-opt-radio {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 2px solid var(--border);
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+      transition: all var(--transition);
+    }
+    .plan-opt.selected .plan-opt-radio {
+      border-color: var(--amber); background: var(--amber);
+    }
+    .plan-opt.selected .plan-opt-radio::after {
+      content: ''; width: 8px; height: 8px; border-radius: 50%; background: #fff; display: block;
+    }
+    .plan-opt-info { flex: 1; }
+    .plan-opt-name { font-weight: 700; font-size: 0.9rem; color: var(--text); }
+    .plan-opt-desc { font-size: 0.77rem; color: var(--text-dim); margin-top: 2px; }
+    .plan-opt-price {
+      font-family: 'Fraunces', serif; font-weight: 900;
+      font-size: 1.1rem; color: var(--amber);
+    }
+    .plan-opt-price span { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 400; font-size: 0.72rem; color: var(--text-muted); }
+    .plan-badge {
+      position: absolute; top: -10px; left: 18px;
+      background: var(--amber); color: #fff;
+      font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;
+      padding: 3px 10px; border-radius: var(--radius-pill);
+    }
+
+    /* ─── SECTION DIVIDER ─── */
+    .pay-section-label {
+      font-size: 0.72rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 14px; margin-top: 32px;
+    }
+
+    /* ─── PAYMENT METHOD TABS ─── */
+    .method-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .method-tab {
+      flex: 1; min-width: 100px;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      padding: 14px 10px;
+      border: 2px solid var(--border); border-radius: var(--radius);
+      background: var(--card); cursor: pointer;
+      font-size: 0.76rem; font-weight: 700; color: var(--text-dim);
+      transition: all var(--transition); text-align: center;
+    }
+    .method-tab:hover { border-color: var(--border-accent); }
+    .method-tab.active { border-color: var(--amber); color: var(--text); background: var(--amber-faint); }
+    .method-tab .mt-icon { font-size: 1.6rem; line-height: 1; }
+
+    /* ─── PAYMENT FORMS ─── */
+    .pay-form-panel { display: none; }
+    .pay-form-panel.active { display: block; }
+
+    /* Card form row */
+    .card-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* Card preview */
+    .card-visual {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 22px;
+      position: relative;
+      overflow: hidden;
+      min-height: 160px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    }
+    .card-visual::before {
+      content: '';
+      position: absolute; top: -40px; right: -40px;
+      width: 160px; height: 160px; border-radius: 50%;
+      background: rgba(245,166,35,0.12);
+    }
+    .card-visual::after {
+      content: '';
+      position: absolute; bottom: -30px; left: 20px;
+      width: 120px; height: 120px; border-radius: 50%;
+      background: rgba(245,166,35,0.07);
+    }
+    .card-chip { font-size: 1.8rem; margin-bottom: 16px; display: block; }
+    .card-number-display {
+      font-family: 'Fraunces', serif; font-size: 1.1rem; letter-spacing: 0.18em;
+      color: rgba(255,255,255,0.9); margin-bottom: 16px;
+    }
+    .card-footer { display: flex; justify-content: space-between; align-items: flex-end; }
+    .card-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(255,255,255,0.45); margin-bottom: 2px; }
+    .card-value { font-size: 0.82rem; color: rgba(255,255,255,0.85); font-weight: 600; }
+    .card-brand-logo { font-size: 2rem; opacity: 0.8; }
+
+    /* Mobile money section */
+    .mobile-instruction {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .mobile-instruction h4 { font-size: 0.9rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .mobile-steps { display: flex; flex-direction: column; gap: 8px; }
+    .mobile-step { display: flex; gap: 12px; align-items: flex-start; font-size: 0.8rem; color: var(--text-dim); }
+    .mobile-step-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--amber); color: #fff;
+      font-size: 0.68rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+    }
+    .ussd-code {
+      background: var(--card);
+      border: 1.5px solid var(--border-accent);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      font-family: monospace; font-size: 1.3rem; font-weight: 700;
+      text-align: center; color: var(--amber); letter-spacing: 0.08em;
+      margin: 12px 0;
+    }
+    .phone-input-row { display: flex; gap: 10px; align-items: flex-end; }
+    .phone-prefix {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 11px 14px;
+      font-size: 0.875rem; font-weight: 700; color: var(--text);
+      white-space: nowrap; line-height: 1;
+    }
+
+    /* EFT */
+    .bank-details {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .bank-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 13px 18px; border-bottom: 1px solid var(--border);
+      font-size: 0.83rem;
+    }
+    .bank-row:last-child { border-bottom: none; }
+    .bank-row-label { color: var(--text-dim); }
+    .bank-row-value { font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
+    .copy-btn {
+      background: none; border: none; cursor: pointer;
+      font-size: 0.7rem; font-weight: 700; color: var(--amber);
+      padding: 3px 8px; border-radius: var(--radius-pill);
+      border: 1px solid rgba(245,166,35,0.3);
+      transition: all var(--transition);
+    }
+    .copy-btn:hover { background: var(--amber-faint); }
+
+    /* ─── PROMO ─── */
+    .promo-row { display: flex; gap: 10px; }
+    .promo-row input { flex: 1; }
+    .promo-applied {
+      background: var(--amber-faint); border: 1px solid rgba(245,166,35,0.3);
+      border-radius: var(--radius); padding: 10px 14px;
+      font-size: 0.8rem; color: var(--amber); font-weight: 700;
+      display: none; align-items: center; gap: 8px; margin-top: 10px;
+    }
+    .promo-applied.show { display: flex; }
+
+    /* ─── PAY BUTTON ─── */
+    .pay-btn {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, var(--amber-deep, #d97706), var(--amber));
+      border: none; border-radius: var(--radius);
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; font-weight: 800;
+      color: #fff; cursor: pointer;
+      transition: all var(--transition);
+      box-shadow: 0 4px 20px rgba(245,166,35,0.35);
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      margin-top: 24px;
+    }
+    .pay-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(245,166,35,0.45); }
+    .pay-btn:active { transform: translateY(0); }
+    .pay-btn-amount { opacity: 0.85; font-size: 0.9rem; }
+
+    .pay-secure-note {
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      font-size: 0.73rem; color: var(--text-muted); margin-top: 12px;
+    }
+
+    /* ─── RIGHT PANEL (ORDER SUMMARY) ─── */
+    .pay-right {
+      background: var(--card);
+      border-left: 1px solid var(--border);
+      padding: 52px 36px;
+      position: sticky;
+      top: var(--nav-h);
+      height: fit-content;
+    }
+    .order-title { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 20px; }
+
+    .order-plan-card {
+      background: linear-gradient(135deg, #14532d, #15803d);
+      border-radius: var(--radius-lg);
+      padding: 22px 20px;
+      margin-bottom: 24px;
+    }
+    .order-plan-name { font-family: 'Fraunces', serif; font-weight: 900; font-size: 1.3rem; color: #fff; margin-bottom: 4px; }
+    .order-plan-tagline { font-size: 0.78rem; color: rgba(255,255,255,0.7); margin-bottom: 16px; }
+    .order-plan-features { display: flex; flex-direction: column; gap: 6px; }
+    .order-plan-feature { font-size: 0.76rem; color: rgba(255,255,255,0.8); display: flex; align-items: center; gap: 7px; }
+    .order-plan-feature::before { content: '✓'; color: var(--amber-light); font-weight: 700; flex-shrink: 0; }
+
+    .order-line { display: flex; justify-content: space-between; font-size: 0.83rem; margin-bottom: 12px; }
+    .order-line-label { color: var(--text-dim); }
+    .order-line-value { font-weight: 700; }
+    .order-line.discount .order-line-value { color: #22c55e; }
+    .order-divider { height: 1px; background: var(--border); margin: 16px 0; }
+    .order-total { display: flex; justify-content: space-between; align-items: center; }
+    .order-total-label { font-weight: 800; font-size: 0.9rem; }
+    .order-total-amount {
+      font-family: 'Fraunces', serif; font-weight: 900;
+      font-size: 1.8rem; color: var(--amber);
+    }
+    .order-period { font-size: 0.72rem; color: var(--text-muted); text-align: right; margin-top: 2px; }
+
+    .trust-badges { display: flex; flex-direction: column; gap: 8px; margin-top: 28px; }
+    .trust-badge { display: flex; align-items: center; gap: 10px; font-size: 0.77rem; color: var(--text-dim); }
+    .trust-badge .tb-icon { font-size: 1rem; flex-shrink: 0; }
+
+    /* ─── SUCCESS OVERLAY ─── */
+    .pay-success-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--bg);
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 40px;
+    }
+    .pay-success-overlay.show { display: flex; }
+    .success-big-emoji { font-size: 5rem; margin-bottom: 20px; animation: float 3s ease-in-out infinite; display: block; }
+    .success-h { font-family: 'Fraunces', serif; font-weight: 900; font-size: 2.4rem; margin-bottom: 10px; }
+    .success-p { color: var(--text-dim); max-width: 400px; margin-bottom: 32px; line-height: 1.7; }
+    .success-confetti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .confetti-piece {
+      position: absolute;
+      width: 10px; height: 10px;
+      animation: confettiFall 3s ease-in forwards;
+      border-radius: 2px;
+    }
+
+    @keyframes confettiFall {
+      0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 1000px) {
+      .pay-layout { grid-template-columns: 1fr; }
+      .pay-right { border-left: none; border-top: 1px solid var(--border); position: static; padding: 36px 24px; }
+      .pay-left { padding: 36px 24px 56px; }
+    }
+    @media (max-width: 600px) {
+      .card-row { grid-template-columns: 1fr; }
+      .method-tabs { gap: 6px; }
+      .method-tab { min-width: 80px; padding: 12px 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="index.html"><div class="nav-logo-icon">U</div><span class="nav-logo-text">UniSave</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="deals.html">Deals</a></li>
+    <li><a href="categories.html">Categories</a></li>
+    <li><a href="businesses.html">For Businesses</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn btn-ghost btn-sm">Log in</a>
+    <a href="verify.html" class="btn btn-primary btn-sm">Get Verified</a>
+  </div>
+  <button class="nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</nav>
+
+<div class="pay-layout">
+
+  <!-- ═══════════ LEFT ═══════════ -->
+  <div class="pay-left">
+    <div class="pay-left-title">Complete your order</div>
+    <p class="pay-left-sub">You're one step away from reaching hundreds of Gaborone students.</p>
+
+    <!-- PLAN SELECT -->
+    <div class="pay-section-label">1. Choose your plan</div>
+    <div class="plan-switcher">
+      <div class="plan-opt" onclick="selectPlan(this,'Starter','Free',0,[])" data-plan="Starter">
+        <div class="plan-opt-radio"></div>
+        <div class="plan-opt-info">
+          <div class="plan-opt-name">Starter</div>
+          <div class="plan-opt-desc">1 active deal · Basic profile · Email support</div>
+        </div>
+        <div class="plan-opt-price">Free <span>/mo</span></div>
+      </div>
+      <div class="plan-opt selected" onclick="selectPlan(this,'Growth','P500/mo',500,['Up to 5 active deals','Homepage featured listing','Priority search placement','Analytics dashboard','WhatsApp support'])" data-plan="Growth">
+        <div class="plan-badge">⭐ Most Popular</div>
+        <div class="plan-opt-radio"></div>
+        <div class="plan-opt-info">
+          <div class="plan-opt-name">Growth</div>
+          <div class="plan-opt-desc">5 deals · Featured homepage · Analytics dashboard</div>
+        </div>
+        <div class="plan-opt-price">P500 <span>/mo</span></div>
+      </div>
+      <div class="plan-opt" onclick="selectPlan(this,'Premium','P1,200/mo',1200,['Unlimited deals','Top homepage banner','Account manager','Advanced analytics','Campus ambassador promos','Social media shoutouts'])" data-plan="Premium">
+        <div class="plan-opt-radio"></div>
+        <div class="plan-opt-info">
+          <div class="plan-opt-name">Premium</div>
+          <div class="plan-opt-desc">Unlimited deals · Banner ads · Account manager</div>
+        </div>
+        <div class="plan-opt-price">P1,200 <span>/mo</span></div>
+      </div>
+    </div>
+
+    <!-- BILLING CYCLE -->
+    <div class="pay-section-label">2. Billing cycle</div>
+    <div style="display:flex;gap:10px;margin-bottom:32px;">
+      <button class="btn btn-outline btn-sm cycle-btn active" onclick="selectCycle(this,'monthly',1)" data-mult="1">Monthly</button>
+      <button class="btn btn-ghost btn-sm cycle-btn" onclick="selectCycle(this,'quarterly',3)" data-mult="3">Quarterly <span style="color:var(--amber);font-weight:800;font-size:0.7rem;">Save 10%</span></button>
+      <button class="btn btn-ghost btn-sm cycle-btn" onclick="selectCycle(this,'annual',12)" data-mult="12">Annual <span style="color:var(--amber);font-weight:800;font-size:0.7rem;">Save 20%</span></button>
+    </div>
+
+    <!-- PAYMENT METHOD -->
+    <div class="pay-section-label">3. Payment method</div>
+    <div class="method-tabs">
+      <div class="method-tab active" onclick="switchMethod(this,'orange')">
+        <div class="mt-icon">🟠</div>
+        <div>Orange Money</div>
+      </div>
+      <div class="method-tab" onclick="switchMethod(this,'myzaka')">
+        <div class="mt-icon">🔵</div>
+        <div>MyZaka</div>
+      </div>
+      <div class="method-tab" onclick="switchMethod(this,'card')">
+        <div class="mt-icon">💳</div>
+        <div>Card</div>
+      </div>
+      <div class="method-tab" onclick="switchMethod(this,'eft')">
+        <div class="mt-icon">🏦</div>
+        <div>Bank Transfer</div>
+      </div>
+    </div>
+
+    <!-- ORANGE MONEY FORM -->
+    <div class="pay-form-panel active" id="form-orange">
+      <div class="mobile-instruction">
+        <h4>🟠 Orange Money — Botswana</h4>
+        <div class="mobile-steps">
+          <div class="mobile-step"><div class="mobile-step-num">1</div><div>Dial the USSD code below on your Orange number, or enter your number for a payment push.</div></div>
+          <div class="mobile-step"><div class="mobile-step-num">2</div><div>Confirm the payment amount in the Orange Money menu.</div></div>
+          <div class="mobile-step"><div class="mobile-step-num">3</div><div>You'll receive an SMS confirmation — your plan activates instantly.</div></div>
+        </div>
+      </div>
+      <div class="ussd-code">*145*1*3*<span id="orange-ref">20250104</span>#</div>
+      <p style="text-align:center;font-size:0.73rem;color:var(--text-muted);margin-bottom:20px;">or enter your Orange number for a payment push notification</p>
+      <div class="form-group">
+        <label class="form-label">Orange Money number</label>
+        <div class="phone-input-row">
+          <div class="phone-prefix">🇧🇼 +267</div>
+          <input type="tel" class="form-input" id="orange-number" placeholder="7X XXX XXX" style="flex:1;"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirm amount</label>
+        <input type="text" class="form-input" id="orange-amount-display" readonly style="background:var(--surface);color:var(--amber);font-weight:700;font-family:'Fraunces',serif;"/>
+      </div>
+      <div class="pay-section-label" style="margin-top:20px;">Promo code</div>
+      <div class="promo-row">
+        <input type="text" class="form-input" id="promo-orange" placeholder="Enter promo code"/>
+        <button class="btn btn-outline btn-sm" onclick="applyPromo('orange')" style="white-space:nowrap;">Apply</button>
+      </div>
+      <div class="promo-applied" id="promo-applied-orange">🎉 Promo applied — 10% off your first month!</div>
+      <button class="pay-btn" onclick="processPayment('Orange Money', this)">
+        <span>🟠 Pay via Orange Money</span>
+        <span class="pay-btn-amount" id="orange-pay-amount">P500</span>
+      </button>
+      <div class="pay-secure-note">🔒 Secured by Orange Botswana · 256-bit encrypted</div>
+    </div>
+
+    <!-- MYZAKA FORM -->
+    <div class="pay-form-panel" id="form-myzaka">
+      <div class="mobile-instruction">
+        <h4>🔵 Mascom MyZaka — Botswana</h4>
+        <div class="mobile-steps">
+          <div class="mobile-step"><div class="mobile-step-num">1</div><div>Dial the MyZaka USSD code on your Mascom number.</div></div>
+          <div class="mobile-step"><div class="mobile-step-num">2</div><div>Select "Pay Business" and enter merchant code: <strong style="color:var(--amber);">UNISAVE</strong></div></div>
+          <div class="mobile-step"><div class="mobile-step-num">3</div><div>Enter your PIN and confirm. Your plan activates within minutes.</div></div>
+        </div>
+      </div>
+      <div class="ussd-code">*167*UNISAVE*<span id="myzaka-amount-code">500</span>#</div>
+      <div class="form-group">
+        <label class="form-label">MyZaka / Mascom number</label>
+        <div class="phone-input-row">
+          <div class="phone-prefix">🇧🇼 +267</div>
+          <input type="tel" class="form-input" id="myzaka-number" placeholder="7X XXX XXX" style="flex:1;"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Amount to pay</label>
+        <input type="text" class="form-input" id="myzaka-amount-display" readonly style="background:var(--surface);color:var(--amber);font-weight:700;font-family:'Fraunces',serif;"/>
+      </div>
+      <div class="pay-section-label" style="margin-top:20px;">Promo code</div>
+      <div class="promo-row">
+        <input type="text" class="form-input" id="promo-myzaka" placeholder="Enter promo code"/>
+        <button class="btn btn-outline btn-sm" onclick="applyPromo('myzaka')" style="white-space:nowrap;">Apply</button>
+      </div>
+      <div class="promo-applied" id="promo-applied-myzaka">🎉 Promo applied — 10% off your first month!</div>
+      <button class="pay-btn" onclick="processPayment('MyZaka', this)">
+        <span>🔵 Pay via MyZaka</span>
+        <span class="pay-btn-amount" id="myzaka-pay-amount">P500</span>
+      </button>
+      <div class="pay-secure-note">🔒 Secured by Mascom MyZaka · Encrypted transaction</div>
+    </div>
+
+    <!-- CARD FORM -->
+    <div class="pay-form-panel" id="form-card">
+      <!-- Visual card preview -->
+      <div class="card-visual">
+        <span class="card-chip">💳</span>
+        <div class="card-number-display" id="card-preview-num">•••• •••• •••• ••••</div>
+        <div class="card-footer">
+          <div>
+            <div class="card-label">Card holder</div>
+            <div class="card-value" id="card-preview-name">YOUR NAME</div>
+          </div>
+          <div>
+            <div class="card-label">Expires</div>
+            <div class="card-value" id="card-preview-exp">MM/YY</div>
+          </div>
+          <div class="card-brand-logo" id="card-preview-brand">💳</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Card number</label>
+        <input type="text" class="form-input" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCardNumber(this)" onkeyup="detectCardBrand(this)"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Cardholder name</label>
+        <input type="text" class="form-input" id="card-name" placeholder="Name as on card" oninput="document.getElementById('card-preview-name').textContent=this.value.toUpperCase()||'YOUR NAME'"/>
+      </div>
+      <div class="card-row">
+        <div class="form-group">
+          <label class="form-label">Expiry date</label>
+          <input type="text" class="form-input" id="card-exp" placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this)"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">CVV / CVC</label>
+          <input type="text" class="form-input" id="card-cvv" placeholder="•••" maxlength="4"/>
+        </div>
+      </div>
+      <div class="pay-section-label" style="margin-top:8px;">Promo code</div>
+      <div class="promo-row">
+        <input type="text" class="form-input" id="promo-card" placeholder="Enter promo code"/>
+        <button class="btn btn-outline btn-sm" onclick="applyPromo('card')" style="white-space:nowrap;">Apply</button>
+      </div>
+      <div class="promo-applied" id="promo-applied-card">🎉 Promo applied — 10% off your first month!</div>
+      <button class="pay-btn" onclick="processPayment('Card', this)">
+        <span>💳 Pay by Card</span>
+        <span class="pay-btn-amount" id="card-pay-amount">P500</span>
+      </button>
+      <div class="pay-secure-note">🔒 Processed via PayFast · PCI-DSS compliant · SSL encrypted</div>
+    </div>
+
+    <!-- BANK TRANSFER FORM -->
+    <div class="pay-form-panel" id="form-eft">
+      <p style="font-size:0.83rem;color:var(--text-dim);margin-bottom:18px;line-height:1.6;">Transfer the exact amount to our business account. Use your business name as the reference. Your plan activates within 1–2 business days after payment confirmation.</p>
+      <div class="bank-details">
+        <div class="bank-row"><span class="bank-row-label">Bank</span><span class="bank-row-value">First National Bank (FNB) Botswana</span></div>
+        <div class="bank-row"><span class="bank-row-label">Account name</span><span class="bank-row-value">UniSave Botswana (Pty) Ltd <button class="copy-btn" onclick="copyText('UniSave Botswana (Pty) Ltd')">Copy</button></span></div>
+        <div class="bank-row"><span class="bank-row-label">Account number</span><span class="bank-row-value">6280 1234 567 <button class="copy-btn" onclick="copyText('6280 1234 567')">Copy</button></span></div>
+        <div class="bank-row"><span class="bank-row-label">Branch code</span><span class="bank-row-value">282672 <button class="copy-btn" onclick="copyText('282672')">Copy</button></span></div>
+        <div class="bank-row"><span class="bank-row-label">Reference</span><span class="bank-row-value"><span id="eft-reference" style="color:var(--amber);">Your business name</span> <button class="copy-btn" id="eft-ref-btn" onclick="copyText('Your business name')">Copy</button></span></div>
+        <div class="bank-row"><span class="bank-row-label">Amount</span><span class="bank-row-value" style="color:var(--amber);font-family:'Fraunces',serif;font-size:1.1rem;" id="eft-amount-display">P500.00</span></div>
+      </div>
+      <div class="form-group" style="margin-top:20px;">
+        <label class="form-label">Your business / reference name</label>
+        <input type="text" class="form-input" id="eft-biz-name" placeholder="e.g. Chicken Licken CBD" oninput="updateEftRef(this.value)"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Your email (for confirmation)</label>
+        <input type="email" class="form-input" id="eft-email" placeholder="business@email.com"/>
+      </div>
+
+      <button class="pay-btn" onclick="processPayment('Bank Transfer', this)">
+        <span>🏦 Confirm Bank Transfer</span>
+        <span class="pay-btn-amount" id="eft-pay-amount">P500</span>
+      </button>
+      <div class="pay-secure-note">📧 We'll email you confirmation within 1–2 business days</div>
+    </div>
+
+  </div><!-- /pay-left -->
+
+  <!-- ═══════════ RIGHT (ORDER SUMMARY) ═══════════ -->
+  <div class="pay-right">
+    <div class="order-title">📋 Order summary</div>
+
+    <div class="order-plan-card" id="summary-plan-card">
+      <div class="order-plan-name" id="summary-plan-name">Growth Plan</div>
+      <div class="order-plan-tagline">Monthly subscription · Billed in Pula (BWP)</div>
+      <div class="order-plan-features" id="summary-plan-features">
+        <div class="order-plan-feature">Up to 5 active deals</div>
+        <div class="order-plan-feature">Homepage featured listing</div>
+        <div class="order-plan-feature">Priority search placement</div>
+        <div class="order-plan-feature">Analytics dashboard</div>
+        <div class="order-plan-feature">WhatsApp support</div>
+      </div>
+    </div>
+
+    <div class="order-line">
+      <span class="order-line-label">Plan</span>
+      <span class="order-line-value" id="sum-plan">Growth</span>
+    </div>
+    <div class="order-line">
+      <span class="order-line-label">Billing</span>
+      <span class="order-line-value" id="sum-cycle">Monthly</span>
+    </div>
+    <div class="order-line">
+      <span class="order-line-label">Base price</span>
+      <span class="order-line-value" id="sum-base">P500</span>
+    </div>
+    <div class="order-line discount" id="sum-discount-row" style="display:none;">
+      <span class="order-line-label" id="sum-discount-label">Discount</span>
+      <span class="order-line-value" id="sum-discount-value">−P0</span>
+    </div>
+    <div class="order-line discount" id="sum-promo-row" style="display:none;">
+      <span class="order-line-label">Promo (10%)</span>
+      <span class="order-line-value" id="sum-promo-value">−P0</span>
+    </div>
+
+    <div class="order-divider"></div>
+
+    <div class="order-total">
+      <div class="order-total-label">Total due today</div>
+      <div>
+        <div class="order-total-amount" id="sum-total">P500</div>
+        <div class="order-period" id="sum-period">then P500/month</div>
+      </div>
+    </div>
+
+    <div class="order-divider" style="margin-top:20px;"></div>
+    <div class="trust-badges">
+      <div class="trust-badge"><span class="tb-icon">🔒</span><span>256-bit SSL encryption on all payments</span></div>
+      <div class="trust-badge"><span class="tb-icon">🔄</span><span>Cancel anytime — no lock-in contracts</span></div>
+      <div class="trust-badge"><span class="tb-icon">🇧🇼</span><span>Prices in Botswana Pula (BWP)</span></div>
+      <div class="trust-badge"><span class="tb-icon">🎓</span><span>Reach 350+ verified Gaborone students</span></div>
+      <div class="trust-badge"><span class="tb-icon">💬</span><span>Support via WhatsApp: +267 7X XXX XXX</span></div>
+    </div>
+
+    <div style="margin-top:20px;padding:14px;background:var(--amber-faint);border:1px solid rgba(245,166,35,0.3);border-radius:var(--radius);font-size:0.78rem;color:var(--text-dim);">
+      🎁 <strong style="color:var(--text);">First month free</strong> if you refer another business. Ask us about our referral programme!
+    </div>
+  </div>
+
+</div><!-- /pay-layout -->
+
+<!-- ═══════════ SUCCESS OVERLAY ═══════════ -->
+<div class="pay-success-overlay" id="success-overlay">
+  <div class="success-confetti" id="confetti-container"></div>
+  <span class="success-big-emoji">🎉</span>
+  <div class="success-h">Payment <span class="gradient-text">received!</span></div>
+  <p class="success-p" id="success-message">
+    Your Growth Plan is now active. Our team will set up your business profile within 24 hours and contact you via WhatsApp.
+  </p>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+    <a href="dashboard.html" class="btn btn-primary btn-lg">Go to dashboard →</a>
+    <a href="businesses.html" class="btn btn-ghost btn-lg">Back to businesses</a>
+  </div>
+  <p style="margin-top:24px;font-size:0.76rem;color:var(--text-muted);">A confirmation has been sent to your email address.</p>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+  // ─── STATE ───
+  var state = {
+    plan: 'Growth',
+    price: 500,
+    cycle: 'monthly',
+    cycleMult: 1,
+    cycleDiscount: 0,
+    promoApplied: false,
+    promoDiscount: 0,
+    features: ['Up to 5 active deals','Homepage featured listing','Priority search placement','Analytics dashboard','WhatsApp support']
+  };
+
+  // ─── READ URL PARAMS ───
+  (function(){
+    var params = new URLSearchParams(location.search);
+    var plan = params.get('plan');
+    var from = params.get('from');
+
+    if (plan === 'Premium') {
+      var el = document.querySelector('[data-plan="Premium"]');
+      if (el) selectPlan(el,'Premium','P1,200/mo',1200,['Unlimited deals','Top homepage banner','Account manager','Advanced analytics','Campus ambassador promos','Social media shoutouts']);
+    } else if (plan === 'Starter') {
+      var el = document.querySelector('[data-plan="Starter"]');
+      if (el) selectPlan(el,'Starter','Free',0,[]);
+    }
+    // Growth is already the default selection
+
+    // If coming from the register form, show the business name in the page header
+    if (from === 'register') {
+      try {
+        var enquiry = JSON.parse(localStorage.getItem('unisave_biz_enquiry') || 'null');
+        if (enquiry && enquiry.bizName) {
+          var subEl = document.querySelector('.pay-left-sub');
+          if (subEl) subEl.textContent = 'Almost there, ' + enquiry.bizName + '! Complete payment to go live on UniSave.';
+          // Pre-fill EFT reference
+          var eftRef = document.getElementById('eft-reference');
+          if (eftRef) { eftRef.textContent = enquiry.bizName; updateEftRef(enquiry.bizName); }
+          var eftInput = document.getElementById('eft-biz-name');
+          if (eftInput) eftInput.value = enquiry.bizName;
+          var eftEmail = document.getElementById('eft-email');
+          if (eftEmail) eftEmail.value = enquiry.email || '';
+        }
+      } catch(e) {}
+    }
+  })();
+
+  function selectPlan(el, name, priceStr, price, features) {
+    document.querySelectorAll('.plan-opt').forEach(function(o){ o.classList.remove('selected'); });
+    el.classList.add('selected');
+    state.plan = name;
+    state.price = price;
+    state.features = features;
+    state.promoApplied = false;
+    state.promoDiscount = 0;
+    document.querySelectorAll('.promo-applied').forEach(function(p){ p.classList.remove('show'); });
+    updateSummary();
+  }
+
+  function selectCycle(btn, cycle, mult) {
+    document.querySelectorAll('.cycle-btn').forEach(function(b){
+      b.classList.remove('active');
+      b.classList.add('btn-ghost');
+      b.classList.remove('btn-outline');
+    });
+    btn.classList.add('active','btn-outline');
+    btn.classList.remove('btn-ghost');
+    state.cycle = cycle;
+    state.cycleMult = mult;
+    state.cycleDiscount = (mult === 3) ? 0.10 : (mult === 12) ? 0.20 : 0;
+    updateSummary();
+  }
+
+  function switchMethod(tab, method) {
+    document.querySelectorAll('.method-tab').forEach(function(t){ t.classList.remove('active'); });
+    tab.classList.add('active');
+    document.querySelectorAll('.pay-form-panel').forEach(function(p){ p.classList.remove('active'); });
+    document.getElementById('form-' + method).classList.add('active');
+  }
+
+  function updateSummary() {
+    var base = state.price * state.cycleMult;
+    var cycleOff = Math.round(base * state.cycleDiscount);
+    var promoOff = state.promoApplied ? Math.round((base - cycleOff) * 0.10) : 0;
+    var total = base - cycleOff - promoOff;
+
+    // Discount row
+    var discRow = document.getElementById('sum-discount-row');
+    if (cycleOff > 0) {
+      discRow.style.display = 'flex';
+      document.getElementById('sum-discount-label').textContent = state.cycle === 'quarterly' ? 'Quarterly saving (10%)' : 'Annual saving (20%)';
+      document.getElementById('sum-discount-value').textContent = '−P' + cycleOff;
+    } else {
+      discRow.style.display = 'none';
+    }
+
+    // Promo row
+    var promoRow = document.getElementById('sum-promo-row');
+    if (promoOff > 0) {
+      promoRow.style.display = 'flex';
+      document.getElementById('sum-promo-value').textContent = '−P' + promoOff;
+    } else {
+      promoRow.style.display = 'none';
+    }
+
+    document.getElementById('sum-plan').textContent = state.plan;
+    document.getElementById('sum-cycle').textContent = state.cycle.charAt(0).toUpperCase() + state.cycle.slice(1);
+    document.getElementById('sum-base').textContent = state.price === 0 ? 'Free' : 'P' + base.toLocaleString();
+    document.getElementById('sum-total').textContent = total === 0 ? 'Free' : 'P' + total.toLocaleString();
+    document.getElementById('sum-period').textContent = state.price === 0 ? 'Always free' : 'then P' + state.price + '/month';
+    document.getElementById('summary-plan-name').textContent = state.plan + ' Plan';
+
+    // Features
+    var featEl = document.getElementById('summary-plan-features');
+    featEl.innerHTML = state.features.map(function(f){ return '<div class="order-plan-feature">'+f+'</div>'; }).join('');
+
+    // Amount displays
+    var amtStr = total === 0 ? 'Free' : 'P' + total.toLocaleString();
+    ['orange','myzaka','card','eft'].forEach(function(m){
+      var el = document.getElementById(m + '-pay-amount');
+      if (el) el.textContent = amtStr;
+    });
+    var amtFull = total === 0 ? 'Free' : 'P' + total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    ['orange-amount-display','myzaka-amount-display','eft-amount-display'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.value = amtFull;
+    });
+    // USSD codes
+    var myzakaCode = document.getElementById('myzaka-amount-code');
+    if (myzakaCode) myzakaCode.textContent = total;
+  }
+
+  function applyPromo(method) {
+    var input = document.getElementById('promo-' + method);
+    var code = input ? input.value.trim().toUpperCase() : '';
+    var validCodes = ['UNISAVE10','LAUNCH2025','STUDENT10','BIZ10'];
+    if (validCodes.indexOf(code) !== -1) {
+      state.promoApplied = true;
+      var appliedEl = document.getElementById('promo-applied-' + method);
+      if (appliedEl) appliedEl.classList.add('show');
+      updateSummary();
+      showToast('Promo code applied! 10% off your first month 🎉', 'success');
+    } else if (!code) {
+      showToast('Please enter a promo code.', 'error');
+    } else {
+      showToast('Invalid promo code. Try UNISAVE10.', 'error');
+    }
+  }
+
+  // ─── CARD FORMATTING ───
+  function formatCardNumber(input) {
+    var v = input.value.replace(/\D/g,'').substring(0,16);
+    input.value = v.replace(/(.{4})/g,'$1 ').trim();
+    var display = v.replace(/(.{4})/g,'$1 ').trim() || '•••• •••• •••• ••••';
+    // mask middle digits
+    var parts = display.split(' ');
+    var masked = parts.map(function(p,i){ return (i===0||i===3) ? p : (p.length===4?'••••':p); }).join(' ');
+    document.getElementById('card-preview-num').textContent = masked || '•••• •••• •••• ••••';
+  }
+
+  function formatExpiry(input) {
+    var v = input.value.replace(/\D/g,'');
+    if (v.length >= 2) v = v.substring(0,2) + ' / ' + v.substring(2,4);
+    input.value = v;
+    var raw = input.value.replace(/\s/g,'').replace('/','');
+    var exp = raw.substring(0,2) + (raw.length>2?'/'+raw.substring(2):'');
+    document.getElementById('card-preview-exp').textContent = exp || 'MM/YY';
+  }
+
+  function detectCardBrand(input) {
+    var num = input.value.replace(/\D/g,'');
+    var brand = '💳';
+    if (/^4/.test(num)) brand = '🔵'; // Visa
+    else if (/^5[1-5]/.test(num)) brand = '🔴'; // Mastercard
+    document.getElementById('card-preview-brand').textContent = brand;
+  }
+
+  // ─── COPY ───
+  function copyText(text) {
+    navigator.clipboard.writeText(text).then(function(){
+      showToast('Copied to clipboard ✓', 'success');
+    }).catch(function(){
+      showToast('Copy: ' + text, 'info');
+    });
+  }
+
+  // ─── EFT REF ───
+  function updateEftRef(val) {
+    var ref = val || 'Your business name';
+    document.getElementById('eft-reference').textContent = ref;
+    document.getElementById('eft-ref-btn').setAttribute('onclick', "copyText('" + ref.replace(/'/g, "\\'") + "')");
+  }
+
+  // ─── POP ───
+  function handlePOP(input) {
+    if (input.files && input.files[0]) {
+      document.getElementById('pop-confirm').style.display = 'block';
+      document.getElementById('pop-filename').textContent = input.files[0].name;
+    }
+  }
+
+  // ─── FIELD ERROR HELPERS ───
+  function payFieldErr(inputId, msg) {
+    var input = document.getElementById(inputId);
+    if (!input) return;
+    input.style.borderColor = '#dc2626';
+    input.style.boxShadow   = '0 0 0 3px rgba(220,38,38,0.15)';
+    var wrap = input.closest('.form-group');
+    var old  = wrap && wrap.querySelector('.pay-err');
+    if (old) old.remove();
+    if (msg && wrap) {
+      var el = document.createElement('p');
+      el.className = 'pay-err';
+      el.style.cssText = 'font-size:0.74rem;color:#dc2626;margin-top:5px;font-weight:600;';
+      el.textContent = msg;
+      wrap.appendChild(el);
+    }
+  }
+  function clearPayErr(inputId) {
+    var input = document.getElementById(inputId);
+    if (!input) return;
+    input.style.borderColor = '';
+    input.style.boxShadow   = '';
+    var wrap = input.closest('.form-group');
+    var old  = wrap && wrap.querySelector('.pay-err');
+    if (old) old.remove();
+  }
+  function isValidEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+  function isValidPhone(v) { return /^[\d\s]{7,12}$/.test(v); }
+
+  // ─── PROCESS PAYMENT ───
+  function processPayment(method, btnEl) {
+    var valid = true;
+    // Validation per method
+    if (method === 'Orange Money') {
+      var num = document.getElementById('orange-number').value.trim();
+      if (state.price > 0 && (!num || !isValidPhone(num))) {
+        payFieldErr('orange-number', 'Please enter a valid Orange Money number (e.g. 71 234 567).');
+        valid = false;
+      } else { clearPayErr('orange-number'); }
+    } else if (method === 'MyZaka') {
+      var num = document.getElementById('myzaka-number').value.trim();
+      if (state.price > 0 && (!num || !isValidPhone(num))) {
+        payFieldErr('myzaka-number', 'Please enter a valid MyZaka / Mascom number.');
+        valid = false;
+      } else { clearPayErr('myzaka-number'); }
+    } else if (method === 'Card') {
+      var cardNum  = document.getElementById('card-number').value.replace(/\s/g,'');
+      var cardName = document.getElementById('card-name').value.trim();
+      var cardExp  = document.getElementById('card-exp').value.replace(/\s/g,'');
+      var cardCvv  = document.getElementById('card-cvv').value.trim();
+      if (cardNum.length < 16)  { payFieldErr('card-number', 'Enter a valid 16-digit card number.'); valid = false; } else { clearPayErr('card-number'); }
+      if (!cardName)            { payFieldErr('card-name',   'Enter the name as it appears on the card.'); valid = false; } else { clearPayErr('card-name'); }
+      if (cardExp.replace('/','').length < 4) { payFieldErr('card-exp', 'Enter a valid expiry date (MM / YY).'); valid = false; } else { clearPayErr('card-exp'); }
+      if (cardCvv.length < 3)   { payFieldErr('card-cvv',   'Enter the 3 or 4 digit CVV/CVC.'); valid = false; } else { clearPayErr('card-cvv'); }
+    } else if (method === 'Bank Transfer') {
+      var bizName = document.getElementById('eft-biz-name').value.trim();
+      var email   = document.getElementById('eft-email').value.trim();
+      if (!bizName) { payFieldErr('eft-biz-name', 'Enter your business or reference name.'); valid = false; } else { clearPayErr('eft-biz-name'); }
+      if (!isValidEmail(email)) { payFieldErr('eft-email', 'Enter a valid email address for confirmation.'); valid = false; } else { clearPayErr('eft-email'); }
+    }
+
+    if (!valid) return;
+
+    // Show loading state on the button that was clicked
+    var btn = btnEl || document.querySelector('#form-' + {
+      'Orange Money':'orange','MyZaka':'myzaka','Card':'card','Bank Transfer':'eft'
+    }[method] + ' .pay-btn');
+    var origHTML = btn.innerHTML;
+    btn.innerHTML = '<span style="animation:spin 0.8s linear infinite;display:inline-block;">⟳</span> Processing…';
+    btn.disabled = true;
+
+    setTimeout(function(){
+      btn.innerHTML = origHTML;
+      btn.disabled = false;
+      launchSuccess(method);
+    }, 2200);
+  }
+
+  function launchSuccess(method) {
+    var overlay = document.getElementById('success-overlay');
+    var msg = document.getElementById('success-message');
+
+    var planName = state.plan;
+
+    // ── PERSIST SUBSCRIPTION ──────────────────────────────────────
+    var base      = state.price * state.cycleMult;
+    var cycleOff  = Math.round(base * state.cycleDiscount);
+    var promoOff  = state.promoApplied ? Math.round((base - cycleOff) * 0.10) : 0;
+    var total     = base - cycleOff - promoOff;
+    var now       = Date.now();
+    var msPerMonth = 30 * 24 * 60 * 60 * 1000;
+    var renewsAt  = now + (msPerMonth * state.cycleMult);
+
+    var sub = {
+      plan:      planName,
+      price:     state.price,
+      total:     total,
+      cycle:     state.cycle,
+      method:    method,
+      activatedAt: now,
+      renewsAt:  renewsAt,
+      status:    method === 'Bank Transfer' ? 'pending' : 'active'
+    };
+    localStorage.setItem('unisave_subscription', JSON.stringify(sub));
+
+    // Also attach to any logged-in user
+    try {
+      var user = JSON.parse(localStorage.getItem('unisave_user') || 'null');
+      if (user) { user.subscription = sub; localStorage.setItem('unisave_user', JSON.stringify(user)); }
+    } catch(e) {}
+    // ─────────────────────────────────────────────────────────────
+
+    if (method === 'Bank Transfer') {
+      msg.textContent = 'Your ' + planName + ' Plan payment has been received. We\'ll verify your transfer within 1–2 business days and activate your listing.';
+    } else {
+      msg.textContent = 'Your ' + planName + ' Plan is now active via ' + method + '! Our team will set up your business profile within 24 hours and contact you via WhatsApp.';
+    }
+
+    overlay.classList.add('show');
+    launchConfetti();
+  }
+
+  function launchConfetti() {
+    var container = document.getElementById('confetti-container');
+    container.innerHTML = '';
+    var colours = ['#f5a623','#22c55e','#3b82f6','#ec4899','#f59e0b','#ffffff'];
+    for (var i = 0; i < 80; i++) {
+      var piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left = Math.random() * 100 + 'vw';
+      piece.style.top = '-20px';
+      piece.style.background = colours[Math.floor(Math.random() * colours.length)];
+      piece.style.width  = (6 + Math.random() * 8) + 'px';
+      piece.style.height = (6 + Math.random() * 8) + 'px';
+      piece.style.animationDelay = Math.random() * 2 + 's';
+      piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+      piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      container.appendChild(piece);
+    }
+  }
+
+  // Init
+  updateSummary();
+
+  // Spin keyframe
+  var style = document.createElement('style');
+  style.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
+  document.head.appendChild(style);
+</script>
+</body>
+</html>
